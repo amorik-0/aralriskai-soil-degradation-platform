@@ -1,5 +1,5 @@
 # AralRiskAI
-### Scientific Land Degradation Risk Platform — Aral Sea / Aralkum Desert Region
+### Scientific Land Degradation Risk Platform - Aral Sea / Aralkum Desert Region
 
 > Predicts micro-regional land degradation risk caused by salt-dust storms,
 > salinization, drought and vegetation loss using Sentinel-2, ERA5 and XGBoost.
@@ -12,7 +12,7 @@
 ```bash
 open frontend/aralriskai.html
 ```
-The dashboard runs fully in the browser using demo data with real scientific formulas.
+The interface visualizes processed environmental indicators and model outputs.
 
 ### 2. Run the backend API
 ```bash
@@ -24,7 +24,7 @@ uvicorn api:app --reload --port 8000
 ### 3. Configure environment
 ```bash
 cp .env.example .env
-# Add your GEE credentials and Anthropic API key
+# Add Google Earth Engine credentials if live data extraction is required
 ```
 
 ---
@@ -34,12 +34,12 @@ cp .env.example .env
 ```
 AralRiskAI/
 ├── frontend/
-│   ├── aralriskai.html          # Full dashboard (map + charts + AI chat)
+│   ├── aralriskai.html          # Scientific dashboard (map + charts + interpretation panel)
 │   ├── css/styles.css           # Dark scientific theme
 │   └── js/
 │       ├── map.js               # Leaflet + gradient risk overlay
 │       ├── charts.js            # Chart.js: NDVI, forecast, salinity, SHAP
-│       └── ai.js                # Claude API scientific assistant
+│       └── ai.js                # Local interpretation panel helpers
 │
 ├── backend/
 │   ├── api.py                   # FastAPI: /risk /forecast /explain /recommendations
@@ -55,7 +55,7 @@ AralRiskAI/
 │   ├── xgb_risk_model.json      # Trained XGBoost model
 │   └── scaler.pkl               # Feature normalizer
 │
-├── .env                         # API keys (not committed)
+├── .env                         # Environment variables (not committed)
 ├── .gitignore
 ├── docker-compose.yml
 └── README.md
