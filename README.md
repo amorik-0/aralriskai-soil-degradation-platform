@@ -17,7 +17,7 @@ The dashboard runs fully in the browser using demo data with real scientific for
 ### 2. Run the backend API
 ```bash
 cd backend
-pip install -r requirements.txt
+pip install -r requirements-full.txt
 uvicorn api:app --reload --port 8000
 ```
 

@@ -11,6 +11,7 @@ build/
 
 # Environment & secrets
 .env
+.vercel/
 gee_credentials.json
 *.key
 *.pem

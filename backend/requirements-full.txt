@@ -1,0 +1,16 @@
+# AralRiskAI — full local requirements for training, SHAP and Earth Engine.
+# Install locally when you need the complete backend + ML toolchain:
+#   pip install -r requirements-full.txt
+
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+pydantic==2.7.1
+numpy==1.26.4
+pandas==2.2.2
+xgboost==2.0.3
+shap==0.45.0
+scikit-learn==1.4.2
+matplotlib>=3.8.0
+earthengine-api==0.1.400
+requests==2.31.0
+python-dotenv==1.0.1
