@@ -138,12 +138,17 @@ Features JSON: {json.dumps(payload.features, ensure_ascii=False)}
 
 Return 4-6 concise recommendations for irrigation, salinity monitoring, dust/wind exposure, and vegetation cover.
 """
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    if GEMINI_API_KEY.startswith("AIza"):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+    else:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+        headers["Authorization"] = f"Bearer {GEMINI_API_KEY}"
     body = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
     request = urllib.request.Request(
         url,
         data=body,
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     try:
