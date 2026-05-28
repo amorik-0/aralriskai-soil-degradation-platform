@@ -294,7 +294,7 @@ button {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -539,6 +539,74 @@ button {
   margin: 0;
   color: var(--text-muted);
   font-size: 13px;
+}
+
+.farmer-panel {
+  display: grid;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.farmer-panel-header h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.farmer-panel-header p {
+  margin: 3px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.field-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.field-input,
+.field-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.field-textarea {
+  resize: vertical;
+  min-height: 78px;
+}
+
+.field-input:focus,
+.field-textarea:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.assistant-response {
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding-top: 10px;
+}
+
+.assistant-response p {
+  margin: 0 0 8px;
+}
+
+.assistant-response ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.assistant-response li {
+  margin: 5px 0;
 }
 
 .charts-grid {

@@ -67,6 +67,11 @@
         <p class="metric-note">Regional grid mean</p>
       </article>
       <article class="metric-card">
+        <p class="metric-label">MO Index</p>
+        <p class="metric-value" id="metric-mo-index">0.00</p>
+        <p class="metric-note">Monitoring object stress</p>
+      </article>
+      <article class="metric-card">
         <p class="metric-label">High-Risk Area Share</p>
         <p class="metric-value" id="metric-high-share">0%</p>
         <p class="metric-note">Grid cells above 0.75</p>
@@ -140,6 +145,21 @@
           <div class="interpretation-panel">
             <h4>Interpretation Panel</h4>
             <p id="interpretation-text">Select a location to view a scientific interpretation of the environmental indicators.</p>
+          </div>
+
+          <div class="farmer-panel">
+            <div class="farmer-panel-header">
+              <div>
+                <h4>Farmer Advisory Assistant</h4>
+                <p>Field-oriented guidance from the selected environmental indicators.</p>
+              </div>
+            </div>
+            <label class="field-label" for="crop-input">Crop or field context</label>
+            <input class="field-input" id="crop-input" type="text" value="salt-tolerant crop">
+            <label class="field-label" for="farmer-question">Question</label>
+            <textarea class="field-textarea" id="farmer-question" rows="3">What should be done this month to reduce soil degradation risk?</textarea>
+            <button class="button button-primary" id="farmer-assistant-button" type="button">Get Recommendation</button>
+            <div class="assistant-response" id="farmer-assistant-response">Run an estimate, then request a field recommendation.</div>
           </div>
 
           <div>
@@ -247,11 +267,13 @@ const TILE_URLS = {
   light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
   dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
 };
+const API_BASE_URL = "https://aralriskai-soil-risk-api.vercel.app";
 
 const state = {
   lat: 44.5,
   lon: 59.2,
   risk: 0,
+  moIndex: 0,
   features: null,
   contributions: null,
   timeOffset: 0,
@@ -356,6 +378,15 @@ function riskRgb(risk) {
   return start.map((value, index) => Math.round(value + (end[index] - value) * Math.max(0, Math.min(1, t))));
 }
 
+function moIndexFromFeatures(risk, features) {
+  const vegStress = Math.max(0, Math.min(1, 1 - features.ndvi / 0.32));
+  const salinityStress = Math.max(0, Math.min(1, features.ndsi / 0.4));
+  const moistureStress = Math.max(0, Math.min(1, 1 - features.moisture / 0.18));
+  const windStress = Math.max(0, Math.min(1, (features.windSpeed - 4) / 12));
+  const dustStress = Math.max(0, Math.min(1, features.aerosolExposure));
+  return 0.34 * risk + 0.20 * salinityStress + 0.18 * vegStress + 0.14 * moistureStress + 0.08 * dustStress + 0.06 * windStress;
+}
+
 let map;
 let tileLayer;
 let riskGroup;
@@ -427,6 +458,7 @@ function drawRiskGrid(timeOffset) {
       const risk = output.risk;
 
       metrics.risk += risk;
+      metrics.moIndex = (metrics.moIndex || 0) + moIndexFromFeatures(risk, output.features);
       metrics.ndvi += output.features.ndvi;
       metrics.salinity += output.features.ndsi;
       metrics.dust += output.features.aerosolExposure;
@@ -514,6 +546,7 @@ function drawWindLayer() {
 function updateMetricCards(metrics) {
   const count = Math.max(1, metrics.count);
   document.getElementById("metric-risk").textContent = (metrics.risk / count).toFixed(2);
+  document.getElementById("metric-mo-index").textContent = ((metrics.moIndex || 0) / count).toFixed(2);
   document.getElementById("metric-high-share").textContent = `${Math.round(metrics.high / count * 100)}%`;
   document.getElementById("metric-ndvi").textContent = (metrics.ndvi / count).toFixed(3);
   document.getElementById("metric-salinity").textContent = (metrics.salinity / count).toFixed(3);
@@ -525,6 +558,7 @@ function analyzePoint(lat, lon) {
   state.lon = lon;
   const output = RiskEngine.spatialIndicators(lat, lon, state.timeOffset);
   state.risk = output.risk;
+  state.moIndex = moIndexFromFeatures(output.risk, output.features);
   state.features = output.features;
   state.contributions = output.contributions;
 
@@ -584,7 +618,8 @@ function updateDetails() {
     ["Soil moisture", `${features.moisture.toFixed(3)} m3/m3`],
     ["Temperature", `${features.temperatureC.toFixed(1)} C`],
     ["Distance from Aralkum", `${features.distanceKm.toFixed(0)} km`],
-    ["Aerosol exposure", features.aerosolExposure.toFixed(2)]
+    ["Aerosol exposure", features.aerosolExposure.toFixed(2)],
+    ["MO Index", state.moIndex.toFixed(3)]
   ].map(([name, value]) => `
     <div class="feature-row">
       <div class="feature-name">${name}</div>
@@ -756,6 +791,63 @@ function handleCoordinateSubmit(event) {
   analyzePoint(lat, lon);
 }
 
+async function requestFarmerRecommendation() {
+  const responseEl = document.getElementById("farmer-assistant-response");
+  const button = document.getElementById("farmer-assistant-button");
+  if (!state.features) return;
+  button.disabled = true;
+  responseEl.textContent = "Preparing field recommendation...";
+
+  const payload = {
+    lat: state.lat,
+    lon: state.lon,
+    risk_score: state.risk,
+    risk_class: riskClass(state.risk),
+    mo_index: state.moIndex,
+    crop: document.getElementById("crop-input").value,
+    question: document.getElementById("farmer-question").value,
+    features: state.features
+  };
+
+  try {
+    const result = await fetch(`${API_BASE_URL}/farmer-assistant`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!result.ok) throw new Error("Request failed");
+    const data = await result.json();
+    const items = Array.isArray(data.recommendations) ? data.recommendations : [];
+    responseEl.innerHTML = `
+      <p>${data.summary || "Recommendation generated from the selected indicators."}</p>
+      <ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>
+    `;
+  } catch (error) {
+    responseEl.innerHTML = `
+      <p>${buildLocalFarmerSummary()}</p>
+      <ul>${buildLocalFarmerActions().map(item => `<li>${item}</li>`).join("")}</ul>
+    `;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function buildLocalFarmerSummary() {
+  const f = state.features;
+  return `Current MO Index is ${state.moIndex.toFixed(2)} and the degradation risk class is ${riskClass(state.risk).toLowerCase()}. NDVI=${f.ndvi.toFixed(3)}, NDSI=${f.ndsi.toFixed(3)}, soil moisture=${f.moisture.toFixed(3)}, wind=${f.windSpeed.toFixed(1)} m/s.`;
+}
+
+function buildLocalFarmerActions() {
+  const f = state.features;
+  const actions = [];
+  if (f.ndsi > 0.28) actions.push("Measure soil electrical conductivity before increasing irrigation volume.");
+  if (f.moisture < 0.07) actions.push("Use smaller drip or furrow irrigation events to reduce surface crusting.");
+  if (f.ndvi < 0.12) actions.push("Maintain cover residue or shelter strips to reduce bare-soil exposure.");
+  if (f.windSpeed > 12 || f.aerosolExposure > 0.5) actions.push("Avoid field operations during high-wind periods and protect open water channels.");
+  if (state.risk > 0.75) actions.push("Increase field monitoring frequency during the next month.");
+  return actions.length ? actions : ["Continue routine monitoring and align irrigation with soil moisture observations."];
+}
+
 function downloadReport() {
   const features = state.features;
   if (!features) return;
@@ -797,6 +889,7 @@ function init() {
   document.getElementById("coordinate-form").addEventListener("submit", handleCoordinateSubmit);
   document.getElementById("timeline-slider").addEventListener("input", handleTimelineChange);
   document.getElementById("report-button").addEventListener("click", downloadReport);
+  document.getElementById("farmer-assistant-button").addEventListener("click", requestFarmerRecommendation);
   initMap();
   initCharts();
   analyzePoint(state.lat, state.lon);
