@@ -342,14 +342,18 @@ function riskClass(risk) {
 }
 
 function riskCss(risk, alpha = 1) {
+  const rgb = riskRgb(risk);
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+}
+
+function riskRgb(risk) {
   const low = [63, 143, 105];
   const med = [199, 139, 32];
   const high = [196, 82, 61];
   const start = risk < 0.55 ? low : med;
   const end = risk < 0.55 ? med : high;
   const t = risk < 0.55 ? risk / 0.55 : (risk - 0.55) / 0.45;
-  const rgb = start.map((value, index) => Math.round(value + (end[index] - value) * Math.max(0, Math.min(1, t))));
-  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+  return start.map((value, index) => Math.round(value + (end[index] - value) * Math.max(0, Math.min(1, t))));
 }
 
 let map;
@@ -428,14 +432,51 @@ function drawRiskGrid(timeOffset) {
       metrics.dust += output.features.aerosolExposure;
       metrics.high += risk >= 0.75 ? 1 : 0;
       metrics.count += 1;
-
-      L.rectangle(
-        [[latMin + row * dlat, lonMin + col * dlon], [latMin + (row + 1) * dlat, lonMin + (col + 1) * dlon]],
-        { weight: 0, fillColor: riskCss(risk, 0.72), fillOpacity: 0.56, interactive: false }
-      ).addTo(riskGroup);
     }
   }
+
+  const surface = buildRiskSurface(timeOffset);
+  L.imageOverlay(surface, [[latMin, lonMin], [latMax, lonMax]], {
+    opacity: 0.82,
+    interactive: false
+  }).addTo(riskGroup);
+
   updateMetricCards(metrics);
+}
+
+function buildRiskSurface(timeOffset) {
+  const { latMin, latMax, lonMin, lonMax } = GRID;
+  const width = 560;
+  const height = 420;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  const image = context.createImageData(width, height);
+  const data = image.data;
+
+  for (let y = 0; y < height; y++) {
+    const lat = latMax - (y / (height - 1)) * (latMax - latMin);
+    for (let x = 0; x < width; x++) {
+      const lon = lonMin + (x / (width - 1)) * (lonMax - lonMin);
+      const { risk, features } = RiskEngine.spatialIndicators(lat, lon, timeOffset);
+      const exposure = Math.max(risk, features.aerosolExposure * 0.72, features.ndsi * 0.9);
+      const visible = Math.max(0, (exposure - 0.28) / 0.72);
+      const alpha = Math.round(Math.min(178, Math.pow(visible, 1.35) * 178));
+      const index = (y * width + x) * 4;
+
+      if (alpha > 0) {
+        const rgb = riskRgb(risk);
+        data[index] = rgb[0];
+        data[index + 1] = rgb[1];
+        data[index + 2] = rgb[2];
+        data[index + 3] = alpha;
+      }
+    }
+  }
+
+  context.putImageData(image, 0, 0);
+  return canvas.toDataURL("image/png");
 }
 
 function drawWindLayer() {
