@@ -1,0 +1,102 @@
+{
+  "best_model": "GradientBoostingRegressor",
+  "best_metrics": {
+    "MAE": 6.4674,
+    "RMSE": 8.1777,
+    "R2": 0.7789
+  },
+  "top_features": [
+    {
+      "feature": "risk_score",
+      "importance": 0.5481242314234389
+    },
+    {
+      "feature": "month",
+      "importance": 0.08311374357304319
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.08192634605309652
+    },
+    {
+      "feature": "salinity_index",
+      "importance": 0.07849693373438855
+    },
+    {
+      "feature": "temperature_c",
+      "importance": 0.06507482411380597
+    }
+  ],
+  "high_risk_months": [
+    {
+      "month": 6,
+      "predicted_risk_next_month": 70.82884368595558
+    },
+    {
+      "month": 7,
+      "predicted_risk_next_month": 67.72503757372586
+    },
+    {
+      "month": 5,
+      "predicted_risk_next_month": 67.22008165741646
+    }
+  ],
+  "high_risk_zones": [
+    {
+      "lat": 41.41233,
+      "lon": 58.30066,
+      "month": 6,
+      "point_id": "41.41233_58.30066",
+      "predicted_risk_next_month": 87.39951019179875
+    },
+    {
+      "lat": 41.592,
+      "lon": 58.121,
+      "month": 6,
+      "point_id": "41.592_58.121",
+      "predicted_risk_next_month": 87.37913449457376
+    },
+    {
+      "lat": 41.592,
+      "lon": 57.04302,
+      "month": 6,
+      "point_id": "41.592_57.04302",
+      "predicted_risk_next_month": 87.21574490778276
+    },
+    {
+      "lat": 41.592,
+      "lon": 58.30066,
+      "month": 6,
+      "point_id": "41.592_58.30066",
+      "predicted_risk_next_month": 87.08622031000407
+    },
+    {
+      "lat": 41.592,
+      "lon": 58.48032,
+      "month": 6,
+      "point_id": "41.592_58.48032",
+      "predicted_risk_next_month": 86.93071582960768
+    },
+    {
+      "lat": 43.0293,
+      "lon": 60.99561,
+      "month": 6,
+      "point_id": "43.0293_60.99561",
+      "predicted_risk_next_month": 86.87664403937094
+    },
+    {
+      "lat": 43.20897,
+      "lon": 61.17527,
+      "month": 6,
+      "point_id": "43.20897_61.17527",
+      "predicted_risk_next_month": 86.53846445840631
+    },
+    {
+      "lat": 41.592,
+      "lon": 57.94134,
+      "month": 6,
+      "point_id": "41.592_57.94134",
+      "predicted_risk_next_month": 86.51629306937264
+    }
+  ]
+}

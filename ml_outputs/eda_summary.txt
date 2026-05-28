@@ -1,0 +1,123 @@
+BASIC EDA
+================================================================================
+Dataset shape: (66049, 28)
+
+Columns:
+- lat
+- lon
+- year
+- month
+- date
+- aerosol_index
+- aod
+- ndvi
+- bsi
+- ndsi
+- salinity_index
+- wind_speed
+- temperature_c
+- precipitation_mm
+- soil_moisture
+- risk_score
+- risk_class
+- salinity_component
+- bare_soil_component
+- aerosol_component
+- aod_component
+- wind_component
+- low_ndvi_component
+- dry_soil_component
+- low_precip_component
+- point_id
+- target_risk_next_month
+- target_class_next_month
+
+Missing values:
+                         missing_count  missing_percent
+lat                                  0              0.0
+lon                                  0              0.0
+target_risk_next_month               0              0.0
+point_id                             0              0.0
+low_precip_component                 0              0.0
+dry_soil_component                   0              0.0
+low_ndvi_component                   0              0.0
+wind_component                       0              0.0
+aod_component                        0              0.0
+aerosol_component                    0              0.0
+bare_soil_component                  0              0.0
+salinity_component                   0              0.0
+risk_class                           0              0.0
+risk_score                           0              0.0
+soil_moisture                        0              0.0
+precipitation_mm                     0              0.0
+temperature_c                        0              0.0
+wind_speed                           0              0.0
+salinity_index                       0              0.0
+ndsi                                 0              0.0
+bsi                                  0              0.0
+ndvi                                 0              0.0
+aod                                  0              0.0
+aerosol_index                        0              0.0
+date                                 0              0.0
+month                                0              0.0
+year                                 0              0.0
+target_class_next_month              0              0.0
+
+Describe numeric columns:
+                          count         mean         std         min         25%         50%         75%         max
+lat                     66049.0    43.575029    1.065774    41.41233    42.66998    43.56829    44.46661    45.36492
+lon                     66049.0    59.535938    2.618203    55.06673    57.22268    59.55830    61.71426    64.76853
+year                    66049.0  2021.524202    1.699131  2019.00000  2020.00000  2022.00000  2023.00000  2024.00000
+month                   66049.0     6.535799    3.303029     1.00000     4.00000     7.00000     9.00000    12.00000
+aerosol_index           66049.0     0.136966    0.665358    -1.22184    -0.46402     0.20791     0.65000     1.64611
+aod                     66049.0     0.166050    0.062948     0.05598     0.12863     0.15513     0.18981     0.59853
+ndvi                    66049.0     0.101844    0.059533     0.01229     0.07137     0.08993     0.11201     0.43292
+bsi                     66049.0     0.134283    0.053842    -0.09053     0.11687     0.14524     0.16684     0.24569
+ndsi                    66049.0    -0.270032    0.085629    -0.49826    -0.32462    -0.27952    -0.24014     0.15093
+salinity_index          66049.0     0.819810    0.086944     0.39575     0.79855     0.83498     0.86677     0.97572
+wind_speed              66049.0     1.774685    0.964653     0.12650     1.04138     1.68522     2.37658     4.81686
+temperature_c           66049.0    14.649768   11.939405    -8.29018     2.83303    15.96584    26.60468    32.76364
+precipitation_mm        66049.0   122.168009  131.907307     0.70847    25.66133    76.33442   170.29149   690.31316
+soil_moisture           66049.0     0.086251    0.089910     0.00090     0.02180     0.04588     0.13152     0.44881
+risk_score              66049.0    55.452855   16.457339     2.64000    45.42000    55.70000    67.29000    94.98000
+salinity_component      66049.0     0.687823    0.235997     0.00000     0.60417     0.73135     0.84234     1.00000
+bare_soil_component     66049.0     0.588523    0.240925     0.00000     0.48093     0.63197     0.74698     1.00000
+aerosol_component       66049.0     0.319106    0.352031     0.00000     0.00000     0.19144     0.59852     1.00000
+aod_component           66049.0     0.427087    0.276142     0.00000     0.22093     0.38588     0.60181     1.00000
+wind_component          66049.0     0.457528    0.288609     0.00000     0.22261     0.43981     0.67305     1.00000
+low_ndvi_component      66049.0     0.712935    0.233208     0.00000     0.64226     0.76203     0.86272     1.00000
+dry_soil_component      66049.0     0.755103    0.278256     0.00000     0.60460     0.88325     0.96159     1.00000
+low_precip_component    66049.0     0.746066    0.270510     0.00000     0.62968     0.84160     0.95589     1.00000
+target_risk_next_month  66049.0    55.429077   16.476238     2.64000    45.36000    55.70000    67.28000    94.98000
+
+risk_score distribution:
+count    66049.000000
+mean        55.452855
+std         16.457339
+min          2.640000
+25%         45.420000
+50%         55.700000
+75%         67.290000
+max         94.980000
+
+target_risk_next_month distribution:
+count    66049.000000
+mean        55.429077
+std         16.476238
+min          2.640000
+25%         45.360000
+50%         55.700000
+75%         67.280000
+max         94.980000
+
+risk_class distribution:
+risk_class
+medium    42098
+high      17941
+low        6010
+
+target_class_next_month distribution:
+target_class_next_month
+medium    42115
+high      17929
+low        6005

@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  # ── FastAPI Backend ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aralriskai-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./weights:/app/../weights
+    environment:
+      - DEMO_MODE=${DEMO_MODE:-true}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEE_KEY_FILE=${GEE_KEY_FILE}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Nginx Frontend ───────────────────────────────────────────
+  frontend:
+    image: nginx:alpine
+    container_name: aralriskai-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped

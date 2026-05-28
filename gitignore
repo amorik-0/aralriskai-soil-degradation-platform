@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Environment & secrets
+.env
+gee_credentials.json
+*.key
+*.pem
+
+# Model weights (large files — store in cloud storage)
+weights/xgb_risk_model.json
+weights/scaler.pkl
+
+# Database
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
